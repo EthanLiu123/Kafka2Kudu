@@ -8,6 +8,7 @@ import realTimeInsert.ImproveData
 import tools.{ContantsSchema, DBUtils, DataUtils, GlobalConfigUtils}
 
 object App {
+  //kudu的master
   val KUDU_MASTER = GlobalConfigUtils.kuduMaster
 
   def main(args: Array[String]): Unit = {
@@ -49,7 +50,8 @@ object App {
         val dataFrame: DataFrame = sqlContext.read.json(x)
 
         val test = dataFrame.select("ip", "sessionid", "advertisersid", "adorderid", "adcreativeid", "adplatformproviderid", "sdkversion", "adplatformkey")
-        //      ImproveData.process(sqlContext, sc, kuduContext, dataFrame)
+        // ImproveData.process(sqlContext, sc, kuduContext, dataFrame)
+        //调用方法将数据落地
         DBUtils.process(kuduContext, test, GlobalConfigUtils.odsPrefix + DataUtils.NowDate() + "7", KUDU_MASTER, ContantsSchema.odsSchema, "ip")
       }
     })
